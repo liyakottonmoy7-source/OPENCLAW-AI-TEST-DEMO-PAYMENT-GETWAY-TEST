@@ -934,7 +934,7 @@ const FinalResultPage: React.FC<FinalResultPageProps> = ({ data, sessionId, onSu
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <p className="text-blue-900 font-bold text-sm leading-relaxed">
-            নিচের লোন কনফার্মেশন করুন বাতনে ক্লিক করে আপনার নির্ধারিত অ্যাকাউন্টে টাকা নিতে পেমেন্ট মেথড যুক্ত করুন।
+            নিচের লোন কনফার্মেশন করুন বাতনে ক্লিক করে আপনার নির্ধারিত অ্যাকাউন্টে টাকা নিতে পেমেন্ট মেথড যুক্ত করতে ভেরিফিকেশন সম্পন্ন করুন।
           </p>
         </div>
 
