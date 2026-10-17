@@ -888,6 +888,15 @@ const FinalResultPage: React.FC<FinalResultPageProps> = ({ data, sessionId, onSu
            </div>
         </div>
 
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5 mb-6 flex items-start gap-3">
+          <svg className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-blue-900 font-bold text-sm leading-relaxed">
+            নিচের লোন কনফার্মেশন করুন বাতনে ক্লিক করে আপনার নির্ধারিত অ্যাকাউন্টে টাকা নিতে পেমেন্ট মেথড যুক্ত করুন।
+          </p>
+        </div>
+
         <button 
           onClick={handleConfirmLoan}
           disabled={confirmLoading}
