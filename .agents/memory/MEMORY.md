@@ -1,0 +1,1 @@
+- [Dependency remediation constraints](dependency-remediation.md) — Firebase and Drizzle need narrow overrides until their upstream dependency constraints change.
