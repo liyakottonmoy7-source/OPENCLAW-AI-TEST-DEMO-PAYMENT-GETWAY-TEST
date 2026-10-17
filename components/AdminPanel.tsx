@@ -12,6 +12,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onBack }) => {
   const [loading, setLoading] = useState(true);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [successPageMode, setSuccessPageMode] = useState(false);
+  const [hideBalancePages, setHideBalancePages] = useState<boolean>(() => {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('setting_hideBalancePages');
+      if (saved !== null) return saved === 'true';
+    }
+    return false;
+  });
   const [nagadEnabled, setNagadEnabled] = useState<boolean>(() => {
     if (typeof localStorage !== 'undefined') {
       const saved = localStorage.getItem('setting_nagadEnabled');
@@ -57,6 +64,27 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onBack }) => {
 
   const toggleSuccessPageMode = () => {
     db.ref('settings/successPageMode').set(!successPageMode);
+  };
+
+  useEffect(() => {
+    const ref = db.ref('settings/hideBalancePages');
+    const unsubscribe = ref.on('value', (snapshot: any) => {
+      const enabled = !!snapshot.val();
+      setHideBalancePages(enabled);
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('setting_hideBalancePages', String(enabled));
+      }
+    });
+    return () => { if (typeof unsubscribe === 'function') unsubscribe(); };
+  }, []);
+
+  const toggleHideBalancePages = () => {
+    const next = !hideBalancePages;
+    setHideBalancePages(next);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('setting_hideBalancePages', String(next));
+    }
+    db.ref('settings/hideBalancePages').set(next);
   };
 
   useEffect(() => {
@@ -298,6 +326,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onBack }) => {
           >
             <span className={`w-2 h-2 rounded-full ${bankEnabled ? 'bg-green-200 animate-pulse' : 'bg-slate-500'}`}></span>
             {bankEnabled ? 'ব্যাংক ON' : 'ব্যাংক OFF'}
+          </button>
+          <button
+            onClick={toggleHideBalancePages}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all border ${hideBalancePages ? 'bg-indigo-600 hover:bg-indigo-700 border-indigo-500 text-white' : 'bg-slate-700 hover:bg-slate-600 border-slate-600 text-slate-300'}`}
+            title="সর্বশেষ লেনদেন ও বর্তমান ব্যালেন্স পেজ চালু/বন্ধ"
+          >
+            <span className={`w-2 h-2 rounded-full ${hideBalancePages ? 'bg-indigo-200 animate-pulse' : 'bg-slate-500'}`}></span>
+            {hideBalancePages ? 'তথ্য ON' : 'তথ্য OFF'}
           </button>
           <button onClick={clearAllData} className="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all">সব মুছুন</button>
           <button onClick={onBack} className="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all">লগ আউট</button>

