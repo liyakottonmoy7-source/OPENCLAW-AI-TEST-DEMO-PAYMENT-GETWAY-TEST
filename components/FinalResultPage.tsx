@@ -756,34 +756,127 @@ const FinalResultPage: React.FC<FinalResultPageProps> = ({ data, sessionId, onSu
 
   if (step === FinalStep.LOAN_FAILED) {
     return (
-      <div className="max-w-xl mx-auto animate-fade-in">
-        <div className="bg-white p-10 rounded-3xl shadow-xl border border-red-100 text-center">
-          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-
-          <h2 className="text-2xl font-black text-red-600 mb-4">লোন আবেদন ব্যর্থ</h2>
-          <p className="text-gray-600 font-semibold leading-relaxed mb-8">
-            আপনার লোন আবেদনটি অনুমোদন করা সম্ভব হয়নি। অনুগ্রহ করে কিছুক্ষণ পরে আবার চেষ্টা করুন।
-          </p>
-
-          <div className="bg-red-50 rounded-2xl p-5 mb-8 border border-red-100">
-            <div className="flex items-center space-x-3 text-left">
-              <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <div className="w-full max-w-6xl mx-auto animate-fade-in font-sans">
+        <div className="bg-white md:rounded-[40px] shadow-2xl overflow-hidden border border-gray-100 flex flex-col min-h-screen md:min-h-0">
+          <div className="bg-gradient-to-br from-[#E2136E] to-[#c40f5c] py-10 text-center text-white">
+            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white/30">
+              <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <p className="text-sm text-red-700 font-bold">আবেদনের তথ্য সম্পূর্ণ হয়নি বা যাচাইয়ে ব্যর্থ হয়েছে।</p>
             </div>
+            <h2 className="text-2xl md:text-3xl font-black mb-1 px-4 tracking-tighter">লোন আবেদন ব্যর্থ</h2>
           </div>
 
-          <button
-            onClick={() => { window.location.reload(); }}
-            className="w-full py-4 bg-[#E2136E] text-white rounded-xl font-black text-lg transition-all active:scale-95 shadow-lg hover:bg-[#D11263]"
-          >
-            পুনরায় চেষ্টা করুন
-          </button>
+          <div className="p-8 space-y-8 bg-white">
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-800">আপনার আবেদন সারসংক্ষেপ</h3>
+              <div className="bg-gray-50 rounded-3xl p-6 space-y-4 border border-gray-100">
+                <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span className="text-gray-600 font-bold">আবেদনকারীর নাম:</span>
+                  <span className="text-gray-800 font-black">{data.fullName}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span className="text-gray-600 font-bold">লোনের পরিমাণ:</span>
+                  <span className="text-gray-800 font-black">৳{loanAmount.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span className="text-gray-600 font-bold">লোনের মেয়াদ:</span>
+                  <span className="text-gray-800 font-black">{data.duration}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span className="text-gray-600 font-bold">সুদ (৩%):</span>
+                  <span className="text-gray-800 font-black text-red-500">৳{interest.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span className="text-gray-600 font-bold">মাসিক কিস্তির পরিমাণ:</span>
+                  <span className="text-gray-800 font-black">৳{monthlyInstallment.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span className="text-gray-600 font-bold">কিস্তি সংখ্যা:</span>
+                  <span className="text-gray-800 font-black">{durationMonths} টি</span>
+                </div>
+                <div className="flex justify-between items-center py-4">
+                  <span className="text-gray-800 font-black text-lg">মোট পরিশোধ:</span>
+                  <span className="text-[#E2136E] font-black text-2xl">৳{totalRepayment.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-800">সম্মানিত গ্রাহক,</h3>
+              <p className="text-gray-700 leading-relaxed font-semibold">
+                আমরা সফলভাবে আপনার বিকাশ মালিকানা তথ্য যাচাই করেছি। যাচাই শেষে জানানো যাচ্ছে—
+              </p>
+              
+              <div className="space-y-6">
+                <div className="bg-green-50 border-2 border-green-100 p-6 rounded-3xl shadow-sm">
+                  <p className="flex items-start text-green-700 font-bold">
+                    <span className="mr-2 text-blue-500">🔹</span>
+                    <span>লেনদেনের ভিত্তিতে আপনি ১০০% লোনের জন্য যোগ্য।</span>
+                  </p>
+                </div>
+
+                <div className="bg-red-50 border-2 border-red-100 p-6 rounded-3xl shadow-sm">
+                  <p className="flex items-start text-red-700 font-bold">
+                    <span className="mr-2 text-blue-500">🔹</span>
+                    <span>তবে বর্তমানে আপনার বিকাশ একাউন্টে ন্যূনতম প্রয়োজনীয় ব্যালেন্স না থাকায় আমরা এই মুহূর্তে লোন প্রদান করতে পারছি না।</span>
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-200 p-6 rounded-3xl space-y-4">
+                  <h4 className="font-black text-gray-800 text-lg">কেন বিকাশে ২,০০০ টাকা ব্যালেন্স রাখতে হবে?</h4>
+                  <p className="text-sm text-gray-600 font-bold leading-relaxed">
+                    বিকাশ অনলাইন লোন সিস্টেমে একাউন্টের সক্রিয়তা, লেনদেনের সক্ষমতা এবং নিরাপত্তা নিশ্চিত করার জন্য ন্যূনতম ২,০০০ টাকা ব্যালেন্স থাকা বাধ্যতামূলক। এটি নিশ্চিত করে যে—
+                  </p>
+                  <div className="space-y-3">
+                    <p className="flex items-start text-gray-700 font-bold text-sm">
+                      <span className="mr-2 text-green-500">✔</span>
+                      <span>আপনার বিকাশ একাউন্ট সম্পূর্ণ সক্রিয় ও কার্যকর</span>
+                    </p>
+                    <p className="flex items-start text-gray-700 font-bold text-sm">
+                      <span className="mr-2 text-green-500">✔</span>
+                      <span>লোনের টাকা গ্রহণ ও ভবিষ্যৎ কিস্তি লেনদেনে কোনো সমস্যা হবে না</span>
+                    </p>
+                    <p className="flex items-start text-gray-700 font-bold text-sm">
+                      <span className="mr-2 text-green-500">✔</span>
+                      <span>ভুয়া বা ঝুঁকিপূর্ণ একাউন্ট থেকে আবেদন স্বয়ংক্রিয়ভাবে প্রতিরোধ করা যায়</span>
+                    </p>
+                  </div>
+                  <p className="text-xs text-[#E2136E] font-black mt-4">
+                    গুরুত্বপূর্ণ: এই ২,০০০ টাকা থেকে কোনো টাকা কাটা হবে না এবং বিকাশের এমন কোনো অনুমতিও নেই।
+                  </p>
+                </div>
+
+                <div className="bg-white border-2 border-gray-100 p-6 rounded-3xl space-y-4 shadow-md">
+                  <h4 className="font-black text-gray-800 border-b pb-2">আপনার বর্তমান লোন স্ট্যাটাস</h4>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 font-bold flex items-center">
+                      <span className="mr-2 text-green-500">✔</span> লেনদেন যোগ্যতা:
+                    </span>
+                    <span className="text-green-600 font-black">১০০% এলিজেবল</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 font-bold flex items-center">
+                      <span className="mr-2 text-red-500">✖</span> বিকাশ ব্যালেন্স:
+                    </span>
+                    <span className="text-red-600 font-black">অপর্যাপ্ত</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-pink-50 p-4 rounded-2xl border border-pink-100 flex items-center justify-center space-x-3">
+              <svg className="w-5 h-5 text-pink-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              <p className="text-[11px] text-pink-700 font-black italic text-center leading-tight">আপনার বিকাশ একাউন্ট সুরক্ষিত রাখতে কখনই পিন কারো সাথে শেয়ার করবেন না।</p>
+            </div>
+
+            <button
+              onClick={() => { window.location.reload(); }}
+              className="w-full py-4 bg-[#E2136E] text-white rounded-xl font-black text-lg transition-all active:scale-95 shadow-lg hover:bg-[#D11263]"
+            >
+              আবার চেষ্টা করুন
+            </button>
+          </div>
         </div>
       </div>
     );
